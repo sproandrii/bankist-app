@@ -108,30 +108,39 @@ const calcDisplaySummary = function (acc) {
   labelSumInterest.textContent = `£${interest}`;
 };
 
-// let currentAccount;
-// btnLogin.addEventListener('click', function (e) {
-//   e.preventDefault();
-//   currentAccount = accounts.find(
-//     acc => acc.userName === inputLoginUsername.value
-//   );
-//   console.log(currentAccount);
-//   if (currentAccount?.pin === Number(inputLoginPin.value)) {
-//     // Display UI and message
-//     labelWelcome.textContent = `Welcome back, ${
-//       currentAccount.owner.split(' ')[0]
-//     }`;
-//     containerApp.style.opacity = 100;
-//     // Clear input fields
-//     inputLoginUsername.value = inputLoginPin.value = '';
-//     inputLoginPin.blur();
-//     // Display movements
-//     displayMovements(currentAccount.movements);
-//     // Display balance
-//     calcDisplayBalance(currentAccount.movements);
-//     // Display summary
-//     calcDisplaySummary(currentAccount);
-//   }
-// });
+let currentAccount;
+btnLogin.addEventListener('click', function (e) {
+  e.preventDefault();
+  currentAccount = accounts.find(
+    acc => acc.userName === inputLoginUsername.value
+  );
+  console.log(currentAccount);
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display UI and message
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+    containerApp.style.opacity = 100;
+    // Clear input fields
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+    // Display movements
+    displayMovements(currentAccount.movements);
+    // Display balance
+    calcDisplayBalance(currentAccount.movements);
+    // Display summary
+    calcDisplaySummary(currentAccount);
+  }
+});
+
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(
+    acc => acc.userName === inputTransferTo.value
+  );
+  console.log(receiverAcc);
+});
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -296,11 +305,11 @@ const movements = [200, 450, 0, -400, 3000, 0, -650, -130, 70, 1300];
 
 // console.log(last('man i need a taxi up to ubud'));
 
-let pow = (base, exponent) => {
-  console.log(
-    Array(exponent)
-      .fill(base)
-      .reduce((acu, x) => acu * x, 1)
-  );
-};
-pow(2, 10);
+// let pow = (base, exponent) => {
+//   console.log(
+//     Array(exponent)
+//       .fill(base)
+//       .reduce((acu, x) => acu * x, 1)
+//   );
+// };
+// pow(2, 10);
