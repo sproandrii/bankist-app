@@ -411,3 +411,61 @@ const movements = [200, 450, 0, -400, 3000, -650, -130, 70, 1300];
 // });
 // console.log(movements);
 // movements.sort((a, b) => a - b);
+
+// const dices100random = Array.from({ length: 100 }, () =>
+//   Math.trunc(Math.random() * 100)
+// );
+// console.log(dices100random);
+
+// 1
+const allDeposit = accounts
+  .flatMap(el => el.movements)
+  .reduce((acu, el) => acu + el, 0);
+console.log(allDeposit);
+
+// 2
+const numDeposit1000 = accounts
+  .flatMap(el => el.movements)
+  .filter(el => el >= 50).length;
+console.log(numDeposit1000);
+
+// Prefixed ++ operator
+// let a = 10;
+// console.log(++a);
+
+//3
+const numDep1000withReduce = accounts
+  .flatMap(el => el.movements)
+  .reduce((acuLength, el) => (el >= 50 ? ++acuLength : acuLength), 0);
+console.log(numDep1000withReduce);
+
+const { deposits, withdrawals } = accounts
+  .flatMap(el => el.movements)
+  .reduce(
+    (sums, cur) => {
+      // cur > 0 ? (sums.deposits += cur) : (sums.withdrawals += cur);
+      sums[cur > 0 ? 'deposits' : 'withdrawals'] += cur;
+      return sums;
+    },
+    { deposits: 0, withdrawals: 0 }
+  );
+console.log(deposits, typeof withdrawals, withdrawals);
+
+// 4
+// this is a nice title -> This Is a Nice Titel
+const convertTitleCase = function (title) {
+  const exceptions = ['a', 'an', 'the', 'and', 'but', 'or', 'in', 'on', 'with'];
+  const titelCase = title
+    .toLowerCase()
+    .split(' ')
+    .map((word, i) =>
+      exceptions.includes(word) && i !== 0
+        ? word
+        : word[0].toUpperCase() + word.slice(1)
+    )
+    .join(' ');
+  return titelCase;
+};
+console.log(convertTitleCase('this is a nice title'));
+console.log(convertTitleCase('this is a LONG titel but not too long'));
+console.log(convertTitleCase('and here is another titel with an EXAMPLE'));
