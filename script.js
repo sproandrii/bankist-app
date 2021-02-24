@@ -129,6 +129,7 @@ btnLogin.addEventListener('click', function (e) {
       currentAccount.owner.split(' ')[0]
     }`;
     containerApp.style.opacity = 100;
+
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
@@ -158,6 +159,39 @@ btnTransfer.addEventListener('click', function (e) {
   console.log(receiverAcc);
 });
 
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    currentAccount.movements.push(amount);
+  }
+  updateUI(currentAccount);
+
+  // Clear input field
+  inputLoanAmount.value = '';
+});
+
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  console.log('start');
+  if (
+    currentAccount.userName === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.userName === currentAccount.userName
+    );
+    console.log(index);
+    console.log('Deleted');
+
+    // Delete account
+    accounts.splice(index, 1);
+
+    // Hide UI
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
+});
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -168,7 +202,7 @@ const currencies = new Map([
   ['GBP', 'Pound sterling'],
 ]);
 
-const movements = [200, 450, 0, -400, 3000, 0, -650, -130, 70, 1300];
+const movements = [200, 450, 0, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 
@@ -328,3 +362,44 @@ const movements = [200, 450, 0, -400, 3000, 0, -650, -130, 70, 1300];
 //   );
 // };
 // pow(2, 10);
+
+// const arr = [
+//   [1, 2, 3],
+//   [4, 5, 6],
+//   [7, 8, 9],
+// ];
+// console.log(arr.flat());
+
+// const arrDeep = [
+//   [[1, 2], 3],
+//   [4, [5, 6]],
+//   [7, 8, 9],
+// ];
+// console.log(arrDeep.flat(2));
+
+// Flat Method
+// const overAllBalance = accounts
+//   .map(mov => mov.movements)
+//   .flat()
+//   .reduce((acu, mov) => acu + mov, 0);
+// console.log(overAllBalance);
+
+// // FlatMap Method
+// const overAllBalance2 = accounts
+//   .flatMap(mov => mov.movements) // flatMap - ONLY one level deep
+//   .reduce((acu, mov) => acu + mov, 0);
+// console.log(overAllBalance);
+
+// sort() Method
+// return < 0, A, B (keep order)
+// return > 0, B, A (switch order)
+// movements.sort((a, b) => {
+//   if (a > b) {
+//     return 1;
+//   }
+//   if (b > a) {
+//     return -1;
+//   }
+// });
+// console.log(movements);
+// movements.sort((a, b) => a - b);
