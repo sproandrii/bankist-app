@@ -87,13 +87,15 @@ const formatMovementDate = function (date, locale) {
   if (daysPassed === 1) return 'Yesterday';
   if (daysPassed <= 7) return `${daysPassed} days ago`;
 
-  // const day = `${date.getDate()}`.padStart(2, 0);
-  // const month = `${date.getMonth() + 1}`.padStart(2, 0);
-  // const year = `${date.getFullYear()}`;
-  // return `${day}/${month}/${year}`;
   return new Intl.DateTimeFormat(locale).format(date);
 };
 
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
+};
 const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
   const movs = sort
@@ -102,14 +104,14 @@ const displayMovements = function (acc, sort = false) {
   movs.forEach(function (mov, i) {
     const date = new Date(acc.movementsDates[i]);
     const displayDate = formatMovementDate(date, acc.locale);
+
+    const formatedMov = formatCur(mov, acc.locale, acc.currency);
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
     <div class="movements__row">
     <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
     <div class="movements__date">${displayDate}</div>
-    <div class="movements__value">${
-      mov > 0 ? '£' + mov.toFixed(2) : mov.toFixed(2) + '£'
-    }</div>
+    <div class="movements__value">${formatedMov}</div>
     </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -118,24 +120,28 @@ const displayMovements = function (acc, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance.toFixed(2)} GBP`;
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
 };
 
 const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acu, mov) => acu + mov);
-  labelSumIn.textContent = `£${incomes.toFixed(2)}`;
+  labelSumIn.textContent = formatCur(incomes, acc.locale, acc.currency);
   const outcomes = acc.movements
     .filter(mov => mov < 0)
     .reduce((acu, mov) => acu + mov);
-  labelSumOut.textContent = `£${Math.abs(outcomes.toFixed(2))}`;
+  labelSumOut.textContent = formatCur(
+    Math.abs(outcomes),
+    acc.locale,
+    acc.currency
+  );
   const interest = acc.movements
     .filter(mov => mov > 0)
     .map(deposit => (deposit * acc.interestRate) / 100)
     .filter(dep => dep >= 1)
     .reduce((acu, int) => acu + int, 0);
-  labelSumInterest.textContent = `£${interest.toFixed(2)}`;
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
 };
 
 const createUserNames = function (accs) {
@@ -164,19 +170,6 @@ let currentAccount;
 currentAccount = account1;
 updateUI(currentAccount);
 containerApp.style.opacity = 100;
-
-//Experementing API
-// const now = new Date();
-// const options = {
-//   hour: 'numeric',
-//   minute: 'numeric',
-//   day: 'numeric',
-//   month: 'long',
-//   year: 'numeric',
-//   weekday: 'long',
-// };
-// const locale = navigator.language;
-// console.log(locale);
 
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
