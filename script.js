@@ -82,7 +82,6 @@ const formatMovementDate = function (date, locale) {
     Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
 
   const daysPassed = calcDaysPassed(new Date(), date);
-  console.log(daysPassed);
   if (daysPassed === 0) return 'Today';
   if (daysPassed === 1) return 'Yesterday';
   if (daysPassed <= 7) return `${daysPassed} days ago`;
@@ -164,7 +163,33 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
-let currentAccount;
+const startLogOutTimer = function () {
+  // Set time to 5 min
+  let time = 35;
+
+  // Call the timer every second
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    // In each call, print the remaining time to UI
+    labelTimer.textContent = `${min}:${sec}`;
+
+    // When 0 sec, stop the timer and logout user
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = `Log in to get started`;
+      containerApp.style.opacity = 0;
+    }
+    // Decrese 1s
+    time--;
+  };
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
+let currentAccount, timer;
 
 // FAKE ALWAYS LOGGED IN
 currentAccount = account1;
@@ -176,7 +201,6 @@ btnLogin.addEventListener('click', function (e) {
   currentAccount = accounts.find(
     acc => acc.userName === inputLoginUsername.value
   );
-  console.log(currentAccount);
   if (currentAccount?.pin === +inputLoginPin.value) {
     // Display UI and message
     labelWelcome.textContent = `Welcome back, ${
@@ -202,6 +226,12 @@ btnLogin.addEventListener('click', function (e) {
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+
+    // Timer
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer();
+
+    // Update UI
     updateUI(currentAccount);
   }
 });
@@ -225,20 +255,35 @@ btnTransfer.addEventListener('click', function (e) {
     // Add transfer date
     currentAccount.movementsDates.push(new Date().toISOString());
     receiverAcc.movementsDates.push(new Date().toISOString());
+
     // Update UI
     updateUI(currentAccount);
+
+    // Reset timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
-  console.log(receiverAcc);
 });
 
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
   const amount = Math.floor(inputLoanAmount.value);
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    currentAccount.movements.push(amount);
-    currentAccount.movementsDates.push(new Date().toISOString());
+    setTimeout(function () {
+      // Add movement
+      currentAccount.movements.push(amount);
+
+      // Add loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
+
+      // Update UI
+      updateUI(currentAccount);
+
+      // Reset timer
+      clearInterval(timer);
+      timer = startLogOutTimer();
+    }, 2000);
   }
-  updateUI(currentAccount);
 
   // Clear input field
   inputLoanAmount.value = '';
@@ -729,3 +774,22 @@ const movements = [200, 450, 0, -400, 3000, -650, -130, 70, 1300];
 //   Math.abs((date2 - date1) / (1000 * 60 * 60 * 24));
 // const days1 = calcDaysPassed(new Date(2037, 11, 10), future);
 // console.log(days1);
+
+// Timeout
+// const ingredients = ['onions', 'spinach'];
+// const pizzaTimer = setTimeout(
+//   (ing1, ing2) => console.log(`Here is your pizza with ${ing1} and ${ing2}.`),
+//   2000,
+//   ...ingredients
+// );
+// console.log('Waiting...');
+// if (ingredients.includes('spinach')) clearTimeout(pizzaTimer);
+
+// setInterval
+// setInterval(function () {
+//   let now = new Date();
+//   const hours = now.getHours();
+//   const min = now.getMinutes();
+//   const sec = now.getSeconds();
+//   console.log(`${hours}:${min}:${sec}`);
+// }, 1000);
